@@ -10,7 +10,7 @@ class Product with ChangeNotifier {
   int numItems = 0;
 
   Product(
-      {@required this.id,
+      {this.id,
       @required this.title,
       @required this.description,
       @required this.price,

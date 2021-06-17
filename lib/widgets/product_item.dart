@@ -1,74 +1,63 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/providers/cart.dart';
 import 'package:shop/providers/product.dart';
+import 'package:shop/providers/products.dart';
 import 'package:shop/utils/app_routes.dart';
 
-import 'badge.dart';
-
 class ProductItem extends StatelessWidget {
+  final Product product;
+
+  ProductItem(this.product);
+
   @override
   Widget build(BuildContext context) {
-    final Product product = Provider.of<Product>(context);
-    final Cart cart = Provider.of<Cart>(context);
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: GridTile(
-        child: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pushNamed(
-              AppRoutes.PRODUCT_DETAIL,
-              arguments: product,
-            );
-          },
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
-          ),
-        ),
-        footer: GridTileBar(
-          backgroundColor: Colors.black54,
-          leading: Consumer<Product>(
-            child: Text('Nunca muda'),
-            builder: (ctx, product, child) => IconButton(
-              icon: Icon(
-                  product.isFavorite ? Icons.favorite : Icons.favorite_border),
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(product.imageUrl),
+      ),
+      title: Text(product.title),
+      trailing: Container(
+        width: 100,
+        child: Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.edit),
+              color: Theme.of(context).primaryColor,
               onPressed: () {
-                product.toggleFavorite();
+                Navigator.of(context)
+                    .pushNamed(AppRoutes.PRODUCT_FORM, arguments: product);
               },
-              color: Colors.white,
             ),
-          ),
-          title: Text(
-            product.title,
-            textAlign: TextAlign.center,
-            softWrap: true,
-            overflow: TextOverflow.fade,
-          ),
-          trailing: Badge(
-            value: product.numProductSendingCart.toString(),
-            child: IconButton(
-              icon: Icon(Icons.shopping_cart),
+            IconButton(
+              icon: Icon(Icons.delete),
+              color: Theme.of(context).errorColor,
               onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Produto adicionado com sucesso!'),
-                  duration: Duration(seconds: 2),
-                  action: SnackBarAction(
-                      label: 'DESFAZER',
-                      onPressed: () {
-                        cart.removeSingleItem(product.id);
-                        product.removeItem(1);
-                      }),
-                ));
-                product.addItem();
-                cart.addItem(product);
+                showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                          title: Text('Excluir Produto'),
+                          content: Text('Tem certeza?'),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.of(ctx).pop(false);
+                                },
+                                child: Text('Não')),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.of(ctx).pop(true);
+                                },
+                                child: Text('Sim')),
+                          ],
+                        )).then((value) {
+                  if (value) {
+                    Provider.of<Products>(context, listen: false)
+                        .deleteProduct(product.id);
+                  }
+                });
               },
-              color: Colors.white,
-            ),
-          ),
+            )
+          ],
         ),
       ),
     );
