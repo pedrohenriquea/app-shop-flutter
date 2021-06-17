@@ -11,7 +11,7 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Product product = Provider.of<Product>(context);
-    final Cart cart = Provider.of<Cart>(context, listen: false);
+    final Cart cart = Provider.of<Cart>(context);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -52,6 +52,17 @@ class ProductItem extends StatelessWidget {
             child: IconButton(
               icon: Icon(Icons.shopping_cart),
               onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Produto adicionado com sucesso!'),
+                  duration: Duration(seconds: 2),
+                  action: SnackBarAction(
+                      label: 'DESFAZER',
+                      onPressed: () {
+                        cart.removeSingleItem(product.id);
+                        product.removeItem(1);
+                      }),
+                ));
                 product.addItem();
                 cart.addItem(product);
               },
