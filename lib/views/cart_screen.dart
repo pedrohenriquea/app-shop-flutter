@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/providers/cart.dart';
+import 'package:shop/providers/orders.dart';
+import 'package:shop/providers/product.dart';
+import 'package:shop/providers/products.dart';
 import 'package:shop/widgets/cart_item_widget.dart';
 
 class CartScreen extends StatelessWidget {
@@ -33,21 +36,28 @@ class CartScreen extends StatelessWidget {
                     width: 10,
                   ),
                   Chip(
-                    label: Text(
-                      'R\$${cart.totalAmount}',
-                      style: TextStyle(
-                          color: Theme.of(context)
-                              .primaryTextTheme
-                              .headline6
-                              .color),
+                    label: FittedBox(
+                      child: Text(
+                        'R\$${cart.totalAmount.toStringAsFixed(2)}',
+                        style: TextStyle(
+                            color: Theme.of(context)
+                                .primaryTextTheme
+                                .headline6
+                                .color),
+                      ),
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   Spacer(),
                   FlatButton(
-                    onPressed: () {},
                     child: Text('COMPRAR'),
                     textColor: Theme.of(context).primaryColor,
+                    onPressed: () {
+                      Provider.of<Orders>(context, listen: false)
+                          .addOrder(cart);
+                      Provider.of<Products>(context, listen: false).clear();
+                      cart.clear();
+                    },
                   )
                 ],
               ),

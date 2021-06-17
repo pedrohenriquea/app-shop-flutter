@@ -26,4 +26,9 @@ class Products with ChangeNotifier {
     _items.add(product);
     notifyListeners();
   }
+
+  void clear(){
+    _items.forEach((element) => element.setNumItems(0));
+    notifyListeners();
+  }
 }

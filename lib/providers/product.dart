@@ -27,7 +27,23 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
+  void removeItem(int quantity){
+    numItems -= quantity;
+
+    if(numItems < 0){
+      numItems = 0;
+    }
+
+    notifyListeners();
+  }
+
   int get numProductSendingCart{
     return numItems;
   }
+
+  void setNumItems(int value){
+    numItems = value;
+  }
+
+
 }
